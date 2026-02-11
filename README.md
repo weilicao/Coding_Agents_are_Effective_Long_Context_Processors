@@ -17,13 +17,7 @@
 Large Language Models (LLMs) have demonstrated remarkable progress in scaling to access massive contexts. However, the access is via the latent and uninterpretable attention mechanisms, and LLMs fail to effectively *process* long context, exhibiting significant performance degradation as context length increases. In this work, we study whether long-context processing can be externalized from latent attention into explicit, executable interactions, by allowing coding agents to organize text in file systems and manipulate it using its native tools. We evaluate off-the-shelf frontier coding agents as the general interface for tasks that require processing long contexts, including long-context reasoning, retrieval-augmented generation, and open-domain question answering with large-scale corpus containing up to three trillion tokens. Across multiple benchmarks, these agents outperform published state-of-the-art by **17.3%** on average. We attribute this efficacy to two key factors: *native tool proficiency*, which enables agents to leverage executable code and terminal commands rather than passive semantic queries, and *file system familiarity*, which allows them to navigate massive text corpora as directory structures.
 
 ## Setup
-We highly recommend creating a new conda environment first:
-```
-conda create -n coding_agents python=3.8
-conda activate coding_agents
-```
-
-Then, install dependencies:
+We recommend install the following dependencies:
 ```
 pip install python-dotenv
 ```
