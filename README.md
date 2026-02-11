@@ -51,7 +51,7 @@ with open("prompts.pkl", "wb") as f:
 **With Codex:**
 
 ```bash
-python run_all_prompts_multithreading.py \
+python run_coding_agents.py \
     --engine codex \
     --pickle /path/to/prompts.pkl \
     --outdir ./codex_outputs \
@@ -62,7 +62,7 @@ python run_all_prompts_multithreading.py \
 **With Claude:**
 
 ```bash
-python run_all_prompts_multithreading.py \
+python run_coding_agents.py \
     --engine claude \
     --pickle /path/to/prompts.pkl \
     --outdir ./claude_outputs \
@@ -75,7 +75,7 @@ python run_all_prompts_multithreading.py \
 If the engine binary is not on `PATH`:
 
 ```bash
-python run_all_prompts_multithreading.py \
+python run_coding_agents.py \
     --engine codex \
     --pickle prompts.pkl \
     --bin /usr/local/bin/codex
@@ -94,7 +94,7 @@ The script supports conda environment configuration via environment variables or
 Alternatively, specify via CLI:
 
 ```bash
-python run_all_prompts_multithreading.py \
+python run_coding_agents.py \
     --engine codex \
     --pickle prompts.pkl \
     --conda-prefix /opt/conda/envs/myenv
