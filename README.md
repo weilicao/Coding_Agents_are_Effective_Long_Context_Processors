@@ -140,7 +140,3 @@ For each prompt with ID `key` (sanitized to `safe_id`), the script produces:
     "modelUsage": object
 }
 ```
-
-## License
-
-The code in this project is licensed under the MIT license.
