@@ -1,33 +1,39 @@
-# Coding Agents are Effective Long-Context Processors
+<div align="center">
+<h1>Coding Agents are Effective Long-Context Processors</h1>
 
-**Abstract**
+</div>
 
+## Table of Contents
+* [Abstract](#abstract)
+* [Setup](#setup)
+* [Data Preparation](#data-preparation)
+* [Running Experiments](#running-experiments)
+  * [Basic Usage](#basic-usage)
+  * [Arguments](#arguments)
+* [Output Format](#output-format)
+* [License](#license)
+
+## Abstract
 Large Language Models (LLMs) have demonstrated remarkable progress in scaling to access massive contexts. However, the access is via the latent and uninterpretable attention mechanisms, and LLMs fail to effectively *process* long context, exhibiting significant performance degradation as context length increases. In this work, we study whether long-context processing can be externalized from latent attention into explicit, executable interactions, by allowing coding agents to organize text in file systems and manipulate it using its native tools. We evaluate off-the-shelf frontier coding agents as the general interface for tasks that require processing long contexts, including long-context reasoning, retrieval-augmented generation, and open-domain question answering with large-scale corpus containing up to three trillion tokens. Across multiple benchmarks, these agents outperform published state-of-the-art by **17.3%** on average. We attribute this efficacy to two key factors: *native tool proficiency*, which enables agents to leverage executable code and terminal commands rather than passive semantic queries, and *file system familiarity*, which allows them to navigate massive text corpora as directory structures.
 
----
+## Setup
+We highly recommend creating a new conda environment first:
+```
+conda create -n coding_agents python=3.8
+conda activate coding_agents
+```
 
-## Installation
-
-### Requirements
-
-- Python 3.8+
-- `python-dotenv` (optional, for environment variable management)
-
-Install dependencies:
-
-```bash
+Then, install dependencies:
+```
 pip install python-dotenv
 ```
 
 You will also need one of the following CLI tools available on your `PATH`:
 
-- `codex` — for Codex-based experiments
-- `claude` — for Claude Code-based experiments
-
----
+* `codex` — for Codex-based experiments
+* `claude` — for Claude Code-based experiments
 
 ## Data Preparation
-
 Prepare your prompts as a Python pickle file containing a dictionary mapping IDs to prompts:
 
 ```python
@@ -42,15 +48,12 @@ with open("prompts.pkl", "wb") as f:
     pickle.dump(prompts, f)
 ```
 
----
-
 ## Running Experiments
 
 ### Basic Usage
 
-**With Codex:**
-
-```bash
+To run experiments with Codex, use:
+```
 python run_coding_agents.py \
     --engine codex \
     --pickle /path/to/prompts.pkl \
@@ -59,9 +62,8 @@ python run_coding_agents.py \
     --resume
 ```
 
-**With Claude:**
-
-```bash
+To run experiments with Claude, use:
+```
 python run_coding_agents.py \
     --engine claude \
     --pickle /path/to/prompts.pkl \
@@ -70,11 +72,8 @@ python run_coding_agents.py \
     --resume
 ```
 
-### Specifying a Custom Binary Path
-
-If the engine binary is not on `PATH`:
-
-```bash
+If the engine binary is not on `PATH`, specify a custom binary path:
+```
 python run_coding_agents.py \
     --engine codex \
     --pickle prompts.pkl \
@@ -82,18 +81,14 @@ python run_coding_agents.py \
 ```
 
 ### Conda Environment Configuration
-
 The script supports conda environment configuration via environment variables or CLI arguments:
 
-| Variable | Description |
-|----------|-------------|
-| `ENGINE_CONDA_PREFIX` | Absolute path to the conda environment root (recommended) |
-| `CONDA_PREFIX` | Fallback if `ENGINE_CONDA_PREFIX` is not set |
-| `ENGINE_CONDA_NAME` | Sets `CONDA_DEFAULT_ENV` (defaults to the last path segment) |
+* `ENGINE_CONDA_PREFIX`: Absolute path to the conda environment root (recommended)
+* `CONDA_PREFIX`: Fallback if `ENGINE_CONDA_PREFIX` is not set
+* `ENGINE_CONDA_NAME`: Sets `CONDA_DEFAULT_ENV` (defaults to the last path segment)
 
 Alternatively, specify via CLI:
-
-```bash
+```
 python run_coding_agents.py \
     --engine codex \
     --pickle prompts.pkl \
@@ -101,44 +96,57 @@ python run_coding_agents.py \
 ```
 
 Or use a `.env` file (loaded automatically):
-
 ```
 ENGINE_CONDA_PREFIX=/opt/conda/envs/myenv
 ENGINE_CONDA_NAME=myenv
 ```
 
----
+### Arguments
 
-## Arguments
+We explain the arguments as follows:
 
-| Argument | Description | Default |
-|----------|-------------|---------|
-| `--engine` | Engine to use (`codex` or `claude`) | *required* |
-| `--pickle` | Path to pickle file containing `{id: prompt}` | *required* |
-| `--outdir` | Output directory | `./<engine>_outputs` |
-| `--limit` | Limit number of prompts processed | None |
-| `--resume` | Skip prompts with existing `.out.txt` files | False |
-| `--interval` | Print progress every N completions | 1 |
-| `--threads` | Number of worker threads | 10 |
-| `--bin` | Path to engine binary | auto-detected |
-| `--conda-prefix` | Conda environment root to prepend to `PATH` | None |
-
----
+* `--engine`: Engine to use. Choose from `codex` or `claude`. (required)
+* `--pickle`: Path to pickle file containing `{id: prompt}`. (required)
+* `--outdir`: Output directory. Default: `./<engine>_outputs`
+* `--limit`: Limit number of prompts processed. Default: None
+* `--resume`: Skip prompts with existing `.out.txt` files. Default: False
+* `--interval`: Print progress every N completions. Default: 1
+* `--threads`: Number of worker threads. Default: 10
+* `--bin`: Path to engine binary. Default: auto-detected
+* `--conda-prefix`: Conda environment root to prepend to `PATH`. Default: None
 
 ## Output Format
-
 For each prompt with ID `key` (sanitized to `safe_id`), the script produces:
 
-| File | Description |
-|------|-------------|
-| `<outdir>/<safe_id>.out.txt` | Engine stdout (Claude: `result` field from JSON) |
-| `<outdir>/<safe_id>.err.txt` | Stderr (removed if empty) |
-| `<outdir>/combined.jsonl` | Aggregated results (one JSON object per prompt) |
+* `<outdir>/<safe_id>.out.txt`: Engine stdout (Claude: `result` field from JSON)
+* `<outdir>/<safe_id>.err.txt`: Stderr (removed if empty)
+* `<outdir>/combined.jsonl`: Aggregated results (one JSON object per prompt)
 
-### JSONL Schema
+### Output Data Structure
+```
+{
+    "engine": string,
+    "id": string,
+    "safe_id": string,
+    "exit_code": int,
+    "stdout_path": string,
+    "stderr_path": string (optional),
+    
+    // Codex-specific fields:
+    "duration_s": float,
+    "started_at": string,
+    "finished_at": string,
+    
+    // Claude-specific fields:
+    "cost": float,
+    "duration_ms": int,
+    "duration_api_ms": int,
+    "num_turns": int,
+    "usage": object,
+    "modelUsage": object
+}
+```
 
-**Common fields:** `engine`, `id`, `safe_id`, `exit_code`, `stdout_path`, `stderr_path` (optional)
+## License
 
-**Codex-specific:** `duration_s`, `started_at`, `finished_at`
-
-**Claude-specific:** `cost`, `duration_ms`, `duration_api_ms`, `num_turns`, `usage`, `modelUsage`
+The code in this project is licensed under the MIT license.
